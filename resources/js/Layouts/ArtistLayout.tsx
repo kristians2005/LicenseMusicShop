@@ -6,7 +6,7 @@ export default function Artist({ children }: PropsWithChildren<{}>) {
         <div className="min-h-screen">
             <NavBar />
             <main>
-                <div className="p-10">{children}</div>
+                <div className="">{children}</div>
             </main>
         </div>
     );

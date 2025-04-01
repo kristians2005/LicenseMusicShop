@@ -2,22 +2,21 @@
 
 namespace App\Http\Controllers;
 
+use App\Models\Song;
 use Illuminate\Http\Request;
 use Inertia\Inertia;
 
 class WelcomeController extends Controller
 {
-
     public function index()
     {
-        $user = auth()->user();
+        $songs = Song::where('is_private', false)
+            ->latest()
+            ->take(6)
+            ->get();
 
         return Inertia::render('Welcome', [
-            'auth' => [
-                'user' => $user,
-                'role' => $user ? $user->role : null,
-            ],
+            'songs' => $songs
         ]);
     }
-
 }

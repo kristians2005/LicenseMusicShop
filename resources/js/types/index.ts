@@ -26,10 +26,14 @@ export interface Song {
     name: string;
     artist: string;
     duration: string;
+    price: number;
+    cover: string | null;
+    file: string;
+    is_private: boolean;
+    user_id: number;
     created_at: string;
     updated_at: string;
-    files: SongFile[];
-    genres: Genre[];
+    genres: { id: number; name: string }[];
 }
 
 export interface PageProps {

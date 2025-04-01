@@ -11,8 +11,8 @@ use Inertia\Inertia;
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
 
-//all guests and auth can access this route
-Route::get('/songs', [SongController::class, 'index'])->name('songs.index');
+
+
 
 Route::get('/license', function () {
     return Inertia::render('Info/License');
@@ -21,11 +21,14 @@ Route::get('/about', function () {
     return Inertia::render('Info/About');
 })->name('About');
 
+Route::get('/store', [SongController::class, 'index'])->name('songs.index');
+
 
 Route::middleware('auth')->group(function () {
     Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+
 
 
 
@@ -45,5 +48,13 @@ Route::middleware('auth')->group(function () {
 
 
 });
+
+Route::middleware(['auth', 'verified'])->group(function () {
+    Route::get('/profile', [ProfileController::class, 'edit'])->name('profile.edit');
+    Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
+    Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
+});
+
+Route::get('/songs/{song}', [SongController::class, 'show'])->name('songs.show');
 
 require __DIR__ . '/auth.php';

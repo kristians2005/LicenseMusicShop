@@ -16,22 +16,15 @@ export default function DropDownList({ auth }: PageProps) {
     return (
         <>
             {filteredItems.map((item, index) => (
-                <li key={index} className="">
-                    {/* {index == 1 ? (
-                        <Switcher className="block px-4 py-2 text-sm" />
-                    ) : null} */}
+                <li key={index}>
                     <Link
                         key={item.name}
                         href={item.href}
                         method={item.method as Method}
                         as={item.method ? "button" : undefined}
-                        className="flex gap-2 w-full text-left px-4 py-2 text-sm "
+                        className="flex gap-2 w-full text-left px-4 py-2 text-sm"
                     >
-                        <img
-                            className="brightness-50"
-                            src={item.icon}
-                            alt={item.name}
-                        />
+                        {item.icon}
                         {item.name}
                     </Link>
                 </li>

@@ -1,13 +1,41 @@
 import PageDropDownSettings from "@/Components/PageSettings/PageDropDownSettings";
 import DropDownList from "@/Components/ProfileDropdown/DropDownList";
+import ThemeSwitcher from "@/Components/ThemeSwitcher";
 import { Link } from "@inertiajs/react";
 import { usePage } from "@inertiajs/react";
 import { PageProps } from "@/types";
+import {
+    Bars3Icon,
+    XMarkIcon,
+    UserCircleIcon,
+    ShoppingCartIcon,
+    Cog6ToothIcon,
+    ArrowRightOnRectangleIcon,
+    UserIcon,
+    KeyIcon,
+    CreditCardIcon,
+    HeartIcon,
+} from "@heroicons/react/24/outline";
 
 export default function NavBar() {
     const { auth } = usePage<PageProps>().props;
+
+    // List of the 10 most visually appealing themes
+    const themes = [
+        "light",
+        "dark",
+        "cupcake",
+        "cyberpunk",
+        "dracula",
+        "luxury",
+        "coffee",
+        "valentine",
+        "night",
+        "winter",
+    ];
+
     return (
-        <div className="bg-base-100 border-b border-base-200 ">
+        <div className="bg-base-100 border-b border-base-200 shadow-lg">
             <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
                 <div className="flex justify-between h-16">
                     {/* Left side */}
@@ -22,7 +50,7 @@ export default function NavBar() {
                         </div>
                         <div className="hidden sm:ml-6 sm:flex sm:space-x-8">
                             <Link
-                                href="/songs"
+                                href={route("songs.index")}
                                 className="inline-flex items-center px-1 pt-1 text-sm font-medium text-base-content hover:text-primary border-b-2 border-transparent hover:border-primary"
                             >
                                 Store
@@ -55,6 +83,9 @@ export default function NavBar() {
                         </div>
 
                         <div className="flex items-center space-x-4">
+                            {/* Theme Switcher */}
+                            <ThemeSwitcher />
+
                             <div className="dropdown dropdown-end">
                                 <label
                                     tabIndex={0}

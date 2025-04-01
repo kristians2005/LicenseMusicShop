@@ -5,40 +5,24 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
 return new class extends Migration {
-    /**
-     * Run the migrations.
-     */
     public function up(): void
     {
         Schema::create('songs', function (Blueprint $table) {
             $table->id();
-
             $table->string('name');
             $table->string('artist');
             $table->string('duration');
-            $table->timestamps();
-        });
-
-        Schema::create('ganeres', function (Blueprint $table) {
-            $table->id();
-            $table->string('name');
-            $table->timestamps();
-        });
-
-        Schema::create('song_file', function (Blueprint $table) {
-            $table->id();
-            $table->foreignId('song_id')->constrained();
-            $table->string('path');
+            $table->decimal('price', 8, 2);
+            $table->boolean('is_private')->default(false);
+            $table->string('cover')->nullable();
+            $table->string('file');
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
             $table->timestamps();
         });
     }
 
-    /**
-     * Reverse the migrations.
-     */
     public function down(): void
     {
         Schema::dropIfExists('songs');
-        Schema::dropIfExists('ganeres');
     }
 };

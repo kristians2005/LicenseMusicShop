@@ -44,16 +44,16 @@ export default function Theme() {
 
     return (
         <>
-            {themes.map((theme) => (
+            {themes.map((themeOption) => (
                 <input
+                    key={themeOption}
                     onChange={(e) => setTheme(e.target.value)}
                     type="radio"
-                    key={theme}
                     name="theme-buttons"
                     className="btn theme-controller shadow-md join-item btn-md w-24"
-                    data-theme={theme}
-                    aria-label={theme}
-                    value={theme}
+                    data-theme={themeOption}
+                    aria-label={themeOption}
+                    value={themeOption}
                 />
             ))}
         </>

@@ -4,7 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
-use Illuminate\Database\Eloquent\Relations\HasMany;
+use Illuminate\Database\Eloquent\Relations\BelongsTo;
 
 class Song extends Model
 {
@@ -14,15 +14,25 @@ class Song extends Model
         'name',
         'artist',
         'duration',
+        'is_private',
+        'price',
+        'cover',
+        'file',
+        'user_id',
     ];
 
-    public function files(): HasMany
-    {
-        return $this->hasMany(SongFile::class);
-    }
+    protected $casts = [
+        'is_private' => 'boolean',
+        'price' => 'decimal:2',
+    ];
 
     public function genres()
     {
         return $this->belongsToMany(Genre::class, 'song_genre');
+    }
+
+    public function user(): BelongsTo
+    {
+        return $this->belongsTo(User::class);
     }
 }
