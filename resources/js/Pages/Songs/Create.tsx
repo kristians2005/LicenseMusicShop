@@ -45,23 +45,6 @@ function Create({ genres = [] }: PageProps) {
             price: "0",
         });
 
-    // // Add warning when trying to leave/refresh
-    // useEffect(() => {
-    //     const handleBeforeUnload = (e: BeforeUnloadEvent) => {
-    //         if (isDirty) {
-    //             e.preventDefault();
-    //             e.returnValue = "";
-    //             return "";
-    //         }
-    //     };
-
-    //     window.addEventListener("beforeunload", handleBeforeUnload);
-
-    //     return () => {
-    //         window.removeEventListener("beforeunload", handleBeforeUnload);
-    //     };
-    // }, [isDirty]);
-
     const handleFileSelect = (file: File) => {
         setSelectedFile(file);
         setData("file", file);
@@ -95,59 +78,25 @@ function Create({ genres = [] }: PageProps) {
         }
     };
 
-    const handleSubmit = (e: React.FormEvent) => {
+    const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
-        // Create FormData to handle file upload
         const formData = new FormData();
         formData.append("name", data.name);
         formData.append("artist", data.artist);
         formData.append("duration", data.duration);
         formData.append("price", data.price);
         formData.append("is_private", data.is_private ? "1" : "0");
+        formData.append("file", selectedFile as File);
+        formData.append("cover", coverImage as File);
+        formData.append("genres", data.genres.join(","));
 
-        // Append genres as an array
-        data.genres.forEach((genreId) => {
-            formData.append("genres[]", genreId.toString());
-        });
-
-        // Append the audio file
-        if (selectedFile) {
-            formData.append("file", selectedFile);
+        try {
+            const response = await axios.post("/songs/create/store", formData);
+            console.log(response);
+        } catch (error) {
+            console.error(error);
         }
-
-        // Append the cover image if exists
-        if (coverImage) {
-            formData.append("cover", coverImage);
-        }
-
-        // Send the form data using axios
-        axios
-            .post(route("songs.store"), formData, {})
-            .then(() => {
-                reset();
-                setSelectedFile(null);
-                setAudioDuration("");
-                setCoverImage(null);
-                setCoverPreview("/images/icons/person.svg");
-                setIsDirty(false);
-                setShowSuccess(true);
-            })
-            .catch((error) => {
-                console.error("Upload failed:", error);
-                if (error.response?.data?.errors) {
-                    // Handle validation errors
-                    const errorMessages = Object.values(
-                        error.response.data.errors
-                    ).flat();
-                    alert(errorMessages.join("\n"));
-                } else if (error.response?.data?.message) {
-                    // Handle other server errors
-                    alert(error.response.data.message);
-                } else {
-                    alert("Failed to upload song. Please try again.");
-                }
-            });
     };
 
     if (showSuccess) {

@@ -75,6 +75,7 @@ class SongController extends Controller
 
     public function store(Request $request)
     {
+
         $validated = $request->validate([
             'name' => 'required|string|max:255',
             'artist' => 'required|string|max:255',
@@ -86,6 +87,8 @@ class SongController extends Controller
             'is_private' => 'boolean',
             'price' => 'required|numeric|min:0',
         ]);
+
+        dd("works");
 
         try {
             // Store audio file
