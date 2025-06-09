@@ -19,12 +19,12 @@ export const menuItems: MenuItem[] = [
         icon: <ArrowUpTrayIcon className="w-5 h-5 text-secondary" />,
         roles: ["artist", "admin"],
     },
-    {
-        name: "Statistics",
-        href: "/stats",
-        icon: <ChartBarIcon className="w-5 h-5 text-accent" />,
-        roles: ["artist"],
-    },
+    // {
+    //     name: "Statistics",
+    //     href: "/stats",
+    //     icon: <ChartBarIcon className="w-5 h-5 text-accent" />,
+    //     roles: ["artist"],
+    // },
     {
         name: "Login",
         href: route("login"),

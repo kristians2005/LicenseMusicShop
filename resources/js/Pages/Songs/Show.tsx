@@ -109,8 +109,8 @@ function Show({ song }: Props) {
                                         ${Number(song.price).toFixed(2)}
                                     </div>
                                     <button className="btn btn-primary w-full">
-                                        <ShoppingCartIcon className="w-5 h-5 mr-2" />
-                                        Add to Cart
+                                        {/* <ShoppingCartIcon className="w-5 h-5 mr-2" /> */}
+                                        Buy
                                     </button>
                                 </div>
                             </div>

@@ -70,7 +70,7 @@ export default function SongCard({ song, onPlay, onAddToCart }: SongCardProps) {
                         className="btn btn-primary btn-sm"
                         onClick={onAddToCart}
                     >
-                        Add to Cart
+                        Buy
                     </button>
                 </div>
             </div>

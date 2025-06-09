@@ -14,15 +14,10 @@ export default function Edit({
         <User>
             <Head title="Profile" />
 
-            <div className="py-12">
-                <div className="mx-auto max-w-7xl space-y-6 px-4">
+            <div className="py-12 flex justify-center">
+                <div className="w-full max-w-7xl space-y-6 px-4 flex flex-col items-center">
                     <div className="card bg-base-100 shadow-xl">
-                        <div className="card-body flex flex-row flex-wrap gap-4 align-middle">
-                            <Theme />
-                        </div>
-                    </div>
-                    <div className="card bg-base-100 shadow-xl">
-                        <div className="card-body">
+                        <div className="card-body m-6">
                             <UpdateProfileInformationForm
                                 mustVerifyEmail={mustVerifyEmail}
                                 status={status}
