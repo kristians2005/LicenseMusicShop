@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from "react";
+import React, { useState } from "react";
 import { useForm } from "@inertiajs/react";
 import withRoleBasedLayout from "@/HOCs/withRoleBasedLayout";
 import UploadSongFile from "./Partials/UploadSongFile";
@@ -24,6 +24,7 @@ interface FormData {
 }
 
 function Create({ genres = [] }: PageProps) {
+    // State
     const [isDirty, setIsDirty] = useState(false);
     const [selectedFile, setSelectedFile] = useState<File | null>(null);
     const [audioDuration, setAudioDuration] = useState<string>("");
@@ -33,18 +34,19 @@ function Create({ genres = [] }: PageProps) {
     );
     const [showSuccess, setShowSuccess] = useState(false);
 
-    const { data, setData, post, processing, errors, reset } =
-        useForm<FormData>({
-            name: "",
-            artist: "",
-            duration: "",
-            file: null,
-            cover: null,
-            genres: [],
-            is_private: false,
-            price: "0",
-        });
+    // Form
+    const { data, setData, processing, errors } = useForm<FormData>({
+        name: "",
+        artist: "",
+        duration: "",
+        file: null,
+        cover: null,
+        genres: [],
+        is_private: false,
+        price: "0",
+    });
 
+    // Handlers
     const handleFileSelect = (file: File) => {
         setSelectedFile(file);
         setData("file", file);
@@ -55,13 +57,11 @@ function Create({ genres = [] }: PageProps) {
         audio.addEventListener("loadedmetadata", () => {
             const minutes = Math.floor(audio.duration / 60);
             const seconds = Math.floor(audio.duration % 60);
-            setAudioDuration(
-                `${minutes}:${seconds.toString().padStart(2, "0")}`
-            );
-            setData(
-                "duration",
-                `${minutes}:${seconds.toString().padStart(2, "0")}`
-            );
+            const formatted = `${minutes}:${seconds
+                .toString()
+                .padStart(2, "0")}`;
+            setAudioDuration(formatted);
+            setData("duration", formatted);
         });
     };
 
@@ -71,9 +71,7 @@ function Create({ genres = [] }: PageProps) {
             setCoverImage(file);
             setData("cover", file);
             const reader = new FileReader();
-            reader.onloadend = () => {
-                setCoverPreview(reader.result as string);
-            };
+            reader.onloadend = () => setCoverPreview(reader.result as string);
             reader.readAsDataURL(file);
         }
     };
@@ -94,11 +92,13 @@ function Create({ genres = [] }: PageProps) {
         try {
             const response = await axios.post("/songs/create/store", formData);
             console.log(response);
+            setShowSuccess(true);
         } catch (error) {
             console.error(error);
         }
     };
 
+    // Success message
     if (showSuccess) {
         return (
             <div className="container mx-auto px-4 py-8">
@@ -143,8 +143,10 @@ function Create({ genres = [] }: PageProps) {
         );
     }
 
+    // Main form
     return (
         <div className="container mx-auto px-4 py-8">
+            {/* Header */}
             <div className="text-center mb-8">
                 <h1 className="text-3xl font-bold text-primary mb-2">
                     Upload Your Song
@@ -154,14 +156,19 @@ function Create({ genres = [] }: PageProps) {
                 </p>
             </div>
 
+            {/* Upload Form */}
             <form onSubmit={handleSubmit} className="space-y-6">
+                {/* File Upload */}
                 {!selectedFile && (
                     <UploadSongFile onFileSelect={handleFileSelect} />
                 )}
+
+                {/* Song Details */}
                 {selectedFile && (
                     <div className="card bg-base-100 shadow-xl">
                         <div className="card-body">
                             <div className="flex flex-col md:flex-row gap-6">
+                                {/* Song Preview & Cover */}
                                 <div className="flex-1">
                                     <SongCardPrototype
                                         title={selectedFile.name}
@@ -183,7 +190,10 @@ function Create({ genres = [] }: PageProps) {
                                         </label>
                                     </div>
                                 </div>
+
+                                {/* Song Form Fields */}
                                 <div className="flex-1 space-y-4">
+                                    {/* Song Name */}
                                     <div className="form-control">
                                         <label htmlFor="name" className="label">
                                             <span className="label-text">
@@ -209,6 +219,7 @@ function Create({ genres = [] }: PageProps) {
                                         )}
                                     </div>
 
+                                    {/* Artist Name */}
                                     <div className="form-control">
                                         <label
                                             htmlFor="artist"
@@ -240,6 +251,7 @@ function Create({ genres = [] }: PageProps) {
                                         )}
                                     </div>
 
+                                    {/* Duration */}
                                     <div className="form-control">
                                         <label
                                             htmlFor="duration"
@@ -258,6 +270,7 @@ function Create({ genres = [] }: PageProps) {
                                         />
                                     </div>
 
+                                    {/* Price */}
                                     <div className="form-control">
                                         <label
                                             htmlFor="price"
@@ -287,6 +300,7 @@ function Create({ genres = [] }: PageProps) {
                                         )}
                                     </div>
 
+                                    {/* Private Checkbox */}
                                     <div className="form-control">
                                         <label className="label cursor-pointer justify-start gap-2">
                                             <input
@@ -306,6 +320,7 @@ function Create({ genres = [] }: PageProps) {
                                         </label>
                                     </div>
 
+                                    {/* Genres */}
                                     <div className="form-control">
                                         <label className="label">
                                             <span className="label-text">
@@ -362,6 +377,7 @@ function Create({ genres = [] }: PageProps) {
                                         )}
                                     </div>
 
+                                    {/* Actions */}
                                     <div className="flex justify-end space-x-4 mt-6">
                                         <Link
                                             href="/"

@@ -127,42 +127,10 @@ const Index = ({ songs, genres = [], filters }: PageProps) => {
                     </div>
 
                     {/* Songs Grid */}
-                    <div className="grid grid-cols-1 md:grid-cols-4 lg:grid-cols-5 gap-6">
+                    <div className="grid grid-cols-1 px-20 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         {songs.data.map((song) => (
                             <SongCard key={song.id} song={song} />
                         ))}
-                    </div>
-
-                    {/* Pagination */}
-                    {songs.last_page > 1 && (
-                        <div className="flex justify-center mt-8">
-                            <div className="join">
-                                {Array.from(
-                                    { length: songs.last_page },
-                                    (_, i) => i + 1
-                                ).map((page) => (
-                                    <button
-                                        key={page}
-                                        className={`join-item btn ${
-                                            page === songs.current_page
-                                                ? "btn-active"
-                                                : ""
-                                        }`}
-                                        onClick={() =>
-                                            (window.location.href = `/songs?page=${page}&search=${searchQuery}&genre=${selectedGenre}&sort=${sortBy}`)
-                                        }
-                                    >
-                                        {page}
-                                    </button>
-                                ))}
-                            </div>
-                        </div>
-                    )}
-
-                    {/* Results Count */}
-                    <div className="text-center mt-4 text-base-content/70">
-                        Showing {songs.data.length > 0 ? 1 : 0} to{" "}
-                        {songs.data.length} of {songs.total} results
                     </div>
                 </div>
             </div>

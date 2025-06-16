@@ -49,7 +49,7 @@ class SongController extends Controller
         }
 
         // Get paginated results
-        $songs = $query->paginate(10);
+        $songs = $query->paginate(99);
 
         // Get all genres for the filter dropdown
         $genres = Genre::all();

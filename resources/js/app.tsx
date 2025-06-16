@@ -10,7 +10,7 @@ const appName = import.meta.env.VITE_APP_NAME || "Laravel";
 
 // Create a function component to handle theme
 function ThemeHandler({ children }: { children: React.ReactNode }) {
-    const theme = localStorage.theme || "dark";
+    const theme = localStorage.theme || "light";
 
     useEffect(() => {
         document.querySelector("html")?.setAttribute("data-theme", theme);
