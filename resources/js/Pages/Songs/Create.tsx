@@ -79,18 +79,29 @@ function Create({ genres = [] }: PageProps) {
     const handleSubmit = async (e: React.FormEvent) => {
         e.preventDefault();
 
+        if (!selectedFile || !coverImage) {
+            alert("Please select both a song file and a cover image.");
+            return;
+        }
+
         const formData = new FormData();
         formData.append("name", data.name);
         formData.append("artist", data.artist);
         formData.append("duration", data.duration);
         formData.append("price", data.price);
         formData.append("is_private", data.is_private ? "1" : "0");
-        formData.append("file", selectedFile as File);
-        formData.append("cover", coverImage as File);
-        formData.append("genres", data.genres.join(","));
+        formData.append("file", selectedFile);
+        formData.append("cover", coverImage);
+
+        // Append genres as array
+        data.genres.forEach((genreId) => {
+            formData.append("genres[]", genreId.toString());
+        });
 
         try {
-            const response = await axios.post("/songs/create/store", formData);
+            const response = await axios.post("/songs/create/store", formData, {
+                headers: { "Content-Type": "multipart/form-data" },
+            });
             console.log(response);
             setShowSuccess(true);
         } catch (error) {
@@ -151,9 +162,6 @@ function Create({ genres = [] }: PageProps) {
                 <h1 className="text-3xl font-bold text-primary mb-2">
                     Upload Your Song
                 </h1>
-                <p className="text-base-content/70">
-                    Share your music with the world
-                </p>
             </div>
 
             {/* Upload Form */}

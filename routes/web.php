@@ -10,10 +10,6 @@ use Inertia\Inertia;
 
 Route::get('/', [WelcomeController::class, 'index'])->name('welcome');
 
-
-
-
-
 Route::get('/license', function () {
     return Inertia::render('Info/License');
 })->name('License');
@@ -40,6 +36,8 @@ Route::middleware('auth')->group(function () {
         Route::get('/songs/{song}/edit', [SongController::class, 'edit'])->name('songs.edit');
         Route::patch('/songs/{song}/update', [SongController::class, 'update'])->name('songs.update');
         Route::delete('/songs/{song}/destroy', [SongController::class, 'destroy'])->name('songs.destroy');
+
+        Route::get('/songs/artist', [SongController::class, 'artistSongs'])->name('songs.artist');
     });
 
     Route::middleware(RoleMiddleware::class . ':admin')->group(function () {

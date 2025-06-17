@@ -15,7 +15,7 @@ class SongController extends Controller
         $query = Song::with('genres')->where('is_private', false);
 
         // Handle search
-        if ($request->has('search')) {
+        if ($request->has('search') && $request->search !== '') {
             $search = $request->search;
             $query->where(function ($q) use ($search) {
                 $q->where('name', 'like', "%{$search}%")
@@ -49,7 +49,7 @@ class SongController extends Controller
         }
 
         // Get paginated results
-        $songs = $query->paginate(99);
+        $songs = $query->paginate(4);
 
         // Get all genres for the filter dropdown
         $genres = Genre::all();
@@ -62,6 +62,17 @@ class SongController extends Controller
                 'genre' => $request->genre,
                 'sort' => $request->sort,
             ],
+        ]);
+    }
+
+    public function artistSongs()
+    {
+        $songs = Song::where('user_id', auth()->id())
+            ->with('genres')
+            ->paginate(4);
+
+        return Inertia::render('Songs/ArtistSongs', [
+            'songs' => $songs
         ]);
     }
 
@@ -88,11 +99,14 @@ class SongController extends Controller
             'price' => 'required|numeric|min:0',
         ]);
 
-        dd("works");
+
 
         try {
-            // Store audio file
-            $audioPath = $request->file('file')->store('songs', 'public');
+            // Store audio file in public/songs
+            $audioFile = $request->file('file');
+            $audioName = uniqid() . '_' . $audioFile->getClientOriginalName();
+            $audioFile->move(public_path('songs'), $audioName);
+            $audioPath = 'songs/' . $audioName;
 
             $song = Song::create([
                 'name' => $validated['name'],
@@ -104,9 +118,12 @@ class SongController extends Controller
                 'user_id' => auth()->id(),
             ]);
 
-            // Store cover image if provided
+            // Store cover image in public/covers if provided
             if ($request->hasFile('cover')) {
-                $coverPath = $request->file('cover')->store('covers', 'public');
+                $coverFile = $request->file('cover');
+                $coverName = uniqid() . '_' . $coverFile->getClientOriginalName();
+                $coverFile->move(public_path('covers'), $coverName);
+                $coverPath = 'covers/' . $coverName;
                 $song->cover = $coverPath;
                 $song->save();
             }

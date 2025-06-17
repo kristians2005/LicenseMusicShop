@@ -1,9 +1,9 @@
 import { Head } from "@inertiajs/react";
+import { Link } from "@inertiajs/react";
 import { PageProps, Song } from "@/types";
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import withRoleBasedLayout from "@/HOCs/withRoleBasedLayout";
 import SongCard from "@/Components/Songs/SongCard";
-import debounce from "lodash/debounce";
 
 interface Genre {
     id: number;
@@ -21,42 +21,13 @@ const Index = ({ songs, genres = [], filters }: PageProps) => {
         filters.search || ""
     );
 
-    // Debounced search function
-    const debouncedSearch = debounce((value: string) => {
-        // This will trigger a page reload with the new search parameter
-        window.location.href = route("songs.index", {
-            search: value,
-            genre: selectedGenre,
-            sort: sortBy,
-        });
-    }, 500);
-
-    // Handle search input change
-    const handleSearchChange = (e: React.ChangeEvent<HTMLInputElement>) => {
-        const value = e.target.value;
-        setSearchQuery(value);
-        debouncedSearch(value);
-    };
-
-    // Handle genre change
-    const handleGenreChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const value = e.target.value;
-        setSelectedGenre(value);
-        window.location.href = route("songs.index", {
-            search: searchQuery,
-            genre: value,
-            sort: sortBy,
-        });
-    };
-
-    // Handle sort change
-    const handleSortChange = (e: React.ChangeEvent<HTMLSelectElement>) => {
-        const value = e.target.value;
-        setSortBy(value);
+    // Handle filter submit
+    const handleFilterSubmit = (e: React.FormEvent) => {
+        e.preventDefault();
         window.location.href = route("songs.index", {
             search: searchQuery,
             genre: selectedGenre,
-            sort: value,
+            sort: sortBy,
         });
     };
 
@@ -77,21 +48,28 @@ const Index = ({ songs, genres = [], filters }: PageProps) => {
                     {/* Filters */}
                     <div className="card bg-base-100 shadow-xl mb-8">
                         <div className="card-body">
-                            <div className="flex flex-col md:flex-row gap-4">
+                            <form
+                                className="flex flex-col md:flex-row gap-4"
+                                onSubmit={handleFilterSubmit}
+                            >
                                 <div className="flex-1">
                                     <input
                                         type="text"
                                         placeholder="Search songs or artists..."
                                         className="input input-bordered w-full"
                                         value={searchQuery}
-                                        onChange={handleSearchChange}
+                                        onChange={(e) =>
+                                            setSearchQuery(e.target.value)
+                                        }
                                     />
                                 </div>
                                 <div className="flex gap-4">
                                     <select
                                         className="select select-bordered"
                                         value={selectedGenre}
-                                        onChange={handleGenreChange}
+                                        onChange={(e) =>
+                                            setSelectedGenre(e.target.value)
+                                        }
                                     >
                                         <option value="all">All Genres</option>
                                         {genres.map((genre) => (
@@ -106,7 +84,9 @@ const Index = ({ songs, genres = [], filters }: PageProps) => {
                                     <select
                                         className="select select-bordered"
                                         value={sortBy}
-                                        onChange={handleSortChange}
+                                        onChange={(e) =>
+                                            setSortBy(e.target.value)
+                                        }
                                     >
                                         <option value="name">
                                             Sort by Name
@@ -121,16 +101,55 @@ const Index = ({ songs, genres = [], filters }: PageProps) => {
                                             Price: High to Low
                                         </option>
                                     </select>
+                                    <button
+                                        type="submit"
+                                        className="btn btn-primary"
+                                    >
+                                        Filter
+                                    </button>
                                 </div>
-                            </div>
+                            </form>
                         </div>
                     </div>
-
+                    <div className="join flex justify-center my-8">
+                        <Link
+                            href={songs.prev_page_url || "#"}
+                            className="join-item bg-base-100 btn"
+                        >
+                            «
+                        </Link>
+                        <button className="join-item bg-base-100 btn">
+                            {songs.current_page}
+                        </button>
+                        <Link
+                            href={songs.next_page_url || "#"}
+                            className="join-item bg-base-100 btn"
+                        >
+                            »
+                        </Link>
+                    </div>
                     {/* Songs Grid */}
                     <div className="grid grid-cols-1 px-20 md:grid-cols-3 lg:grid-cols-4 gap-6">
                         {songs.data.map((song) => (
                             <SongCard key={song.id} song={song} />
                         ))}
+                    </div>
+                    <div className="join flex justify-center mt-8">
+                        <Link
+                            href={songs.prev_page_url || "#"}
+                            className="join-item bg-base-100 btn"
+                        >
+                            «
+                        </Link>
+                        <button className="join-item bg-base-100 btn">
+                            {songs.current_page}
+                        </button>
+                        <Link
+                            href={songs.next_page_url || "#"}
+                            className="join-item bg-base-100 btn"
+                        >
+                            »
+                        </Link>
                     </div>
                 </div>
             </div>

@@ -18,6 +18,7 @@ interface Props extends PageProps {
 function Show({ song }: Props) {
     if (!song) return null;
     const [isPlaying, setIsPlaying] = useState(false);
+    console.log(song);
 
     return (
         <>
@@ -33,30 +34,18 @@ function Show({ song }: Props) {
                                 <div className="card-body">
                                     <div className="flex flex-col md:flex-row gap-6">
                                         {/* Cover Image */}
-                                        <div className="w-full md:w-64 h-64 rounded-lg shadow-lg overflow-hidden">
-                                            {song.cover ? (
+                                        <div className="w-full md:w-64 h-64 rounded-lg shadow-lg justify-center items-center bg-base-300 flex">
+                                            {song.cover && (
                                                 <img
-                                                    src={song.cover}
-                                                    alt={song.name}
-                                                    className="w-full h-full object-cover"
+                                                    className=""
+                                                    src={
+                                                        song.cover.startsWith(
+                                                            "/"
+                                                        )
+                                                            ? song.cover
+                                                            : `/${song.cover}`
+                                                    }
                                                 />
-                                            ) : (
-                                                <div className="w-full h-full bg-base-200 flex items-center justify-center">
-                                                    <svg
-                                                        xmlns="http://www.w3.org/2000/svg"
-                                                        fill="none"
-                                                        viewBox="0 0 24 24"
-                                                        strokeWidth={1.5}
-                                                        stroke="currentColor"
-                                                        className="w-16 h-16 text-base-content/50"
-                                                    >
-                                                        <path
-                                                            strokeLinecap="round"
-                                                            strokeLinejoin="round"
-                                                            d="M9 9l10.5-3m0 6.553v3.75a2.25 2.25 0 01-2.25 2.25H5.25A2.25 2.25 0 013 16.5V4.5m0 6.553L12.75 9"
-                                                        />
-                                                    </svg>
-                                                </div>
                                             )}
                                         </div>
 
@@ -93,7 +82,15 @@ function Show({ song }: Props) {
                             <div className="card bg-base-100 shadow-xl">
                                 <div className="card-body">
                                     <h3 className="card-title mb-4">Preview</h3>
-                                    <WaveForm audioUrl={song.file} />
+                                    <WaveForm
+                                        audioUrl={
+                                            song.file
+                                                ? song.file.startsWith("/")
+                                                    ? song.file
+                                                    : `/${song.file}`
+                                                : ""
+                                        }
+                                    />
                                 </div>
                             </div>
                         </div>

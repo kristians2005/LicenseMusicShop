@@ -10,21 +10,22 @@ class GenreSeeder extends Seeder
     public function run()
     {
         $genres = [
-            'Pop',
-            'Rock',
-            'Hip Hop',
-            'R&B',
-            'Electronic',
-            'Classical',
-            'Jazz',
-            'Country',
-            'Blues',
-            'Metal',
-            'Folk',
-            'Reggae',
-            'Latin',
-            'World',
-            'Alternative',
+            'Chiptune',
+            '8-bit',
+            'Orchestral',
+            'Ambient',
+            'Synthwave',
+            'Retro',
+            'Fantasy',
+            'Epic',
+            'Action',
+            'Adventure',
+            'Horror',
+            'Puzzle',
+            'Platformer',
+            'Battle',
+            'Menu',
+            'Soundtrack',
         ];
 
         foreach ($genres as $genre) {
