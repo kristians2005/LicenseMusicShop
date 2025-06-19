@@ -25,7 +25,9 @@ Route::middleware('auth')->group(function () {
     Route::patch('/profile', [ProfileController::class, 'update'])->name('profile.update');
     Route::delete('/profile', [ProfileController::class, 'destroy'])->name('profile.destroy');
 
-
+    Route::post('/songs/{song}/purchase', [SongController::class, 'purchase'])->name('songs.purchase');
+    Route::get('/purchases', [SongController::class, 'purchasedSongs'])->name('songs.purchased');
+    Route::get('/purchases/{song}', [SongController::class, 'download'])->name('songs.download');
 
 
     Route::middleware(RoleMiddleware::class . ':artist,admin')->group(function () {
@@ -34,7 +36,7 @@ Route::middleware('auth')->group(function () {
         Route::get('/songs/create', [SongController::class, 'create'])->name('songs.create');
         Route::post('/songs/create/store', [SongController::class, 'store'])->name('songs.store');
         Route::get('/songs/{song}/edit', [SongController::class, 'edit'])->name('songs.edit');
-        Route::patch('/songs/{song}/update', [SongController::class, 'update'])->name('songs.update');
+        Route::post('/songs/{song}/update', [SongController::class, 'update'])->name('songs.update');
         Route::delete('/songs/{song}/destroy', [SongController::class, 'destroy'])->name('songs.destroy');
 
         Route::get('/songs/artist', [SongController::class, 'artistSongs'])->name('songs.artist');

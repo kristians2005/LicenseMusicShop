@@ -1,11 +1,13 @@
 <!DOCTYPE html>
-<html data-theme="" lang="{{ str_replace('_', '-', app()->getLocale()) }}">
+<html lang="{{ str_replace('_', '-', app()->getLocale()) }}">
 
 <head>
     <meta charset="utf-8">
     <meta name="viewport" content="width=device-width, initial-scale=1">
 
-    <title inertia>{{ config('app.name', 'Laravel') }}</title>
+    <link rel="icon" type="image/png" href="{{ asset('/images/icons/upload.svg') }}">
+
+    <title>BuyMusic</title>
 
     <!-- Fonts -->
     <link rel="preconnect" href="https://fonts.bunny.net">
@@ -20,6 +22,15 @@
 
 <body class="font-sans antialiased">
     @inertia
+
+    <script>
+        (function () {
+            try {
+                var theme = localStorage.getItem('theme') || 'light';
+                document.documentElement.setAttribute('data-theme', theme);
+            } catch (e) { }
+        })();
+    </script>
 </body>
 
 </html>

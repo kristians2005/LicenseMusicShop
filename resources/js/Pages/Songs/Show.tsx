@@ -37,7 +37,7 @@ function Show({ song }: Props) {
                                         <div className="w-full md:w-64 h-64 rounded-lg shadow-lg justify-center items-center bg-base-300 flex">
                                             {song.cover && (
                                                 <img
-                                                    className=""
+                                                    className=" w-full h-full object-cover rounded-lg"
                                                     src={
                                                         song.cover.startsWith(
                                                             "/"

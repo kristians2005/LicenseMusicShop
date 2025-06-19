@@ -4,6 +4,7 @@ import { PageProps, Song } from "@/types";
 import { useState } from "react";
 import withRoleBasedLayout from "@/HOCs/withRoleBasedLayout";
 import SongCard from "@/Components/Songs/SongCard";
+import { motion, AnimatePresence } from "framer-motion";
 
 interface Genre {
     id: number;
@@ -12,6 +13,7 @@ interface Genre {
 
 const Index = ({ songs, genres = [], filters }: PageProps) => {
     if (!songs) return null;
+    console.log("songs", songs);
 
     const [selectedGenre, setSelectedGenre] = useState<string>(
         filters.genre || "all"
@@ -35,21 +37,26 @@ const Index = ({ songs, genres = [], filters }: PageProps) => {
         <>
             <Head title="Songs" />
             <div className="min-h-screen bg-base-200">
-                <div className="container mx-auto px-4 py-8">
-                    <div className="text-center mb-8">
-                        <h1 className="text-3xl font-bold text-primary mb-2">
+                <div className="container mx-auto px-2 sm:px-4 py-4 sm:py-8">
+                    <div className="text-center mb-6 sm:mb-8">
+                        <h1 className="text-2xl sm:text-3xl font-bold text-primary mb-2">
                             Browse Songs
                         </h1>
-                        <p className="text-base-content/70">
+                        <p className="text-base-content/70 text-sm sm:text-base">
                             Discover and purchase music from talented artists
                         </p>
                     </div>
 
                     {/* Filters */}
-                    <div className="card bg-base-100 shadow-xl mb-8">
-                        <div className="card-body">
+                    <motion.div
+                        className="card bg-base-100 shadow-xl mb-6 sm:mb-8"
+                        initial={{ opacity: 0, y: -20 }}
+                        animate={{ opacity: 1, y: 0 }}
+                        transition={{ duration: 0.4 }}
+                    >
+                        <div className="card-body p-4 sm:p-6">
                             <form
-                                className="flex flex-col md:flex-row gap-4"
+                                className="flex flex-col gap-3 sm:gap-4 md:flex-row"
                                 onSubmit={handleFilterSubmit}
                             >
                                 <div className="flex-1">
@@ -63,9 +70,9 @@ const Index = ({ songs, genres = [], filters }: PageProps) => {
                                         }
                                     />
                                 </div>
-                                <div className="flex gap-4">
+                                <div className="flex flex-col gap-3 sm:flex-row sm:gap-4">
                                     <select
-                                        className="select select-bordered"
+                                        className="select select-bordered w-full sm:w-auto"
                                         value={selectedGenre}
                                         onChange={(e) =>
                                             setSelectedGenre(e.target.value)
@@ -82,7 +89,7 @@ const Index = ({ songs, genres = [], filters }: PageProps) => {
                                         ))}
                                     </select>
                                     <select
-                                        className="select select-bordered"
+                                        className="select select-bordered w-full sm:w-auto"
                                         value={sortBy}
                                         onChange={(e) =>
                                             setSortBy(e.target.value)
@@ -103,15 +110,15 @@ const Index = ({ songs, genres = [], filters }: PageProps) => {
                                     </select>
                                     <button
                                         type="submit"
-                                        className="btn btn-primary"
+                                        className="btn btn-primary w-full sm:w-auto"
                                     >
                                         Filter
                                     </button>
                                 </div>
                             </form>
                         </div>
-                    </div>
-                    <div className="join flex justify-center my-8">
+                    </motion.div>
+                    <div className="join flex justify-center my-6 sm:my-8">
                         <Link
                             href={songs.prev_page_url || "#"}
                             className="join-item bg-base-100 btn"
@@ -128,13 +135,23 @@ const Index = ({ songs, genres = [], filters }: PageProps) => {
                             »
                         </Link>
                     </div>
-                    {/* Songs Grid */}
-                    <div className="grid grid-cols-1 px-20 md:grid-cols-3 lg:grid-cols-4 gap-6">
-                        {songs.data.map((song) => (
-                            <SongCard key={song.id} song={song} />
-                        ))}
+                    {/* Songs Grid with animation */}
+                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+                        <AnimatePresence>
+                            {songs.data.map((song) => (
+                                <motion.div
+                                    key={song.id}
+                                    initial={{ opacity: 0, scale: 0.95, y: 20 }}
+                                    animate={{ opacity: 1, scale: 1, y: 0 }}
+                                    exit={{ opacity: 0, scale: 0.95, y: 20 }}
+                                    transition={{ duration: 0.25 }}
+                                >
+                                    <SongCard song={song} />
+                                </motion.div>
+                            ))}
+                        </AnimatePresence>
                     </div>
-                    <div className="join flex justify-center mt-8">
+                    <div className="join flex justify-center mt-6 sm:mt-8">
                         <Link
                             href={songs.prev_page_url || "#"}
                             className="join-item bg-base-100 btn"

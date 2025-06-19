@@ -49,7 +49,18 @@ class SongController extends Controller
         }
 
         // Get paginated results
-        $songs = $query->paginate(4);
+        $songs = $query->paginate(8);
+
+        // Mark owned songs
+        $user = auth()->user();
+        $ownedSongIds = $user
+            ? $user->purchasedSongs()->pluck('songs.id')->toArray()
+            : [];
+
+        $songs->getCollection()->transform(function ($song) use ($ownedSongIds) {
+            $song->owned = in_array($song->id, $ownedSongIds);
+            return $song;
+        });
 
         // Get all genres for the filter dropdown
         $genres = Genre::all();
@@ -74,6 +85,35 @@ class SongController extends Controller
         return Inertia::render('Songs/ArtistSongs', [
             'songs' => $songs
         ]);
+    }
+
+    public function purchasedSongs()
+    {
+        $user = auth()->user();
+        $purchasedSongs = $user->purchasedSongs()->with('genres')->paginate(4);
+
+        return Inertia::render('Songs/PurchasedSongs', [
+            'songs' => $purchasedSongs
+        ]);
+    }
+
+    public function download(Song $song)
+    {
+        $user = auth()->user();
+
+        // Check if the user owns the song
+        if (!$user->purchasedSongs()->where('song_id', $song->id)->exists()) {
+            abort(403, 'You do not own this song.');
+        }
+
+        // Check if the file exists
+        $filePath = public_path($song->file);
+        if (!file_exists($filePath)) {
+            abort(404, 'File not found.');
+        }
+
+        // Return the file as a download
+        return response()->download($filePath, $song->name . '.' . pathinfo($filePath, PATHINFO_EXTENSION));
     }
 
     public function create()
@@ -179,34 +219,37 @@ class SongController extends Controller
         ]);
 
         try {
-            // Update audio file if provided
+            // Update audio file if provided (store in public/songs)
             if ($request->hasFile('file')) {
-                // Delete old file
-                if ($song->file) {
-                    Storage::disk('public')->delete($song->file);
+                // Delete old file if exists
+                if ($song->file && file_exists(public_path($song->file))) {
+                    @unlink(public_path($song->file));
                 }
-                $audioPath = $request->file('file')->store('songs', 'public');
-                $song->file = $audioPath;
+                $audioFile = $request->file('file');
+                $audioName = uniqid() . '_' . $audioFile->getClientOriginalName();
+                $audioFile->move(public_path('songs'), $audioName);
+                $song->file = 'songs/' . $audioName;
             }
 
-            // Update cover image if provided
+            // Update cover image if provided (store in public/covers)
             if ($request->hasFile('cover')) {
-                // Delete old cover
-                if ($song->cover) {
-                    Storage::disk('public')->delete($song->cover);
+                // Delete old cover if exists
+                if ($song->cover && file_exists(public_path($song->cover))) {
+                    @unlink(public_path($song->cover));
                 }
-                $coverPath = $request->file('cover')->store('covers', 'public');
-                $song->cover = $coverPath;
+                $coverFile = $request->file('cover');
+                $coverName = uniqid() . '_' . $coverFile->getClientOriginalName();
+                $coverFile->move(public_path('covers'), $coverName);
+                $song->cover = 'covers/' . $coverName;
             }
 
             // Update other fields
-            $song->update([
-                'name' => $validated['name'],
-                'artist' => $validated['artist'],
-                'duration' => $validated['duration'],
-                'is_private' => $validated['is_private'] ?? false,
-                'price' => $validated['price'],
-            ]);
+            $song->name = $validated['name'];
+            $song->artist = $validated['artist'];
+            $song->duration = $validated['duration'];
+            $song->is_private = $validated['is_private'] ?? false;
+            $song->price = $validated['price'];
+            $song->save();
 
             // Update genres
             $song->genres()->sync($validated['genres']);
@@ -223,15 +266,20 @@ class SongController extends Controller
     public function destroy(Song $song)
     {
         try {
-            // Delete files
-            if ($song->file) {
-                Storage::disk('public')->delete($song->file);
-            }
-            if ($song->cover) {
-                Storage::disk('public')->delete($song->cover);
+            // Delete audio file from public/songs
+            if ($song->file && file_exists(public_path($song->file))) {
+                @unlink(public_path($song->file));
             }
 
-            // Delete song
+            // Delete cover image from public/covers
+            if ($song->cover && file_exists(public_path($song->cover))) {
+                @unlink(public_path($song->cover));
+            }
+
+            // Detach genres
+            $song->genres()->detach();
+
+            // Delete the song record
             $song->delete();
 
             return redirect()->route('songs.index')
@@ -243,12 +291,19 @@ class SongController extends Controller
         }
     }
 
-    public function download(Song $song)
+    public function purchase(Song $song)
     {
-        if ($song->is_private && !auth()->user()) {
-            abort(403);
+
+        $user = auth()->user();
+
+        // Prevent duplicate purchase
+        if ($user->purchasedSongs()->where('song_id', $song->id)->exists()) {
+            return back()->with('info', 'You already own this song.');
         }
 
-        return Storage::disk('public')->download($song->file);
+        // Save purchase
+        $user->purchasedSongs()->attach($song->id);
+
+        return back()->with('success', 'Song purchased! You can now download it.');
     }
 }

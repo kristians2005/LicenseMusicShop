@@ -1,4 +1,4 @@
-import { Link } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import { Song } from "@/types";
 
 interface ArtistSongCardProps {
@@ -75,16 +75,31 @@ export default function ArtistSongCard({
                     <div className="flex gap-2">
                         <Link
                             className="btn btn-outline btn-sm"
-                            href={route("songs.edit", song.id)}
+                            href={`/songs/${song.id}/edit`}
                         >
-                            edit
+                            Edit
                         </Link>
-                        <Link
-                            className="btn btn-error btn-sm"
-                            href={route("songs.destroy", song.id)}
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                if (
+                                    confirm(
+                                        "Are you sure you want to delete this song?"
+                                    )
+                                ) {
+                                    router.delete(
+                                        route("songs.destroy", song.id)
+                                    );
+                                }
+                            }}
                         >
-                            Delete
-                        </Link>
+                            <button
+                                type="submit"
+                                className="btn btn-error btn-sm"
+                            >
+                                Delete
+                            </button>
+                        </form>
                     </div>
                 </div>
             </div>

@@ -1,4 +1,4 @@
-import { Link } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import { Song } from "@/types";
 import { useState } from "react";
 
@@ -9,22 +9,18 @@ interface SongCardProps {
 }
 
 export default function SongCard({ song, onPlay, onAddToCart }: SongCardProps) {
-    // Show only 3 genres on small screens, all on md+
-    const [showAllGenres, setShowAllGenres] = useState(false);
-    const genresToShow =
-        typeof window !== "undefined" &&
-        window.innerWidth < 768 &&
-        !showAllGenres
-            ? song.genres.slice(0, 3)
-            : song.genres;
-
     return (
-        <div className="card bg-base-100 shadow-xl group w-full h-full flex flex-col">
-            <Link href={route("songs.show", song.id)}>
-                <figure className="relative aspect-square bg-base-300 flex items-center justify-center">
+        <div className="card bg-base-100 shadow-xl w-full h-[500px] flex flex-col relative">
+            {song.owned && (
+                <span className="absolute top-3 right-3 z-10 bg-success text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
+                    Owned
+                </span>
+            )}
+            <Link href={route("songs.show", song.id)} className="flex-shrink-0">
+                <figure className="relative aspect-square bg-base-300 flex items-center justify-center rounded-t-xl overflow-hidden">
                     {song.cover && (
                         <img
-                            className="w-full h-full object-cover rounded-t-xl"
+                            className="w-full h-full object-cover"
                             src={
                                 song.cover.startsWith("/")
                                     ? song.cover
@@ -53,45 +49,48 @@ export default function SongCard({ song, onPlay, onAddToCart }: SongCardProps) {
                     </div>
                 </figure>
             </Link>
-            <div className="card-body flex flex-col flex-1">
-                <Link href={route("songs.show", song.id)}>
-                    <h2 className="card-title text-base-content">
-                        {song.name}
-                    </h2>
-                    <p className="text-base-content/70">{song.artist}</p>
-                </Link>
-                <div className="flex flex-wrap gap-1 mt-2">
-                    {/* Show only 3 genres on md and below, all on lg+ */}
-                    <div className="block xl:hidden">
-                        {song.genres.slice(0, 3).map((genre) => (
-                            <span key={genre.id} className="badge badge-sm">
-                                {genre.name}
-                            </span>
-                        ))}
-                        {song.genres.length > 3 && (
-                            <span className="badge badge-ghost badge-sm">
-                                +{song.genres.length - 3} more
-                            </span>
-                        )}
-                    </div>
-                    <div className="hidden xl:flex flex-wrap gap-1">
-                        {song.genres.map((genre) => (
-                            <span key={genre.id} className="badge badge-sm">
-                                {genre.name}
-                            </span>
-                        ))}
+            <div className="card-body flex flex-col flex-1 min-h-0 justify-between">
+                <div>
+                    <Link href={route("songs.show", song.id)}>
+                        <h2 className="card-title line-clamp-2 text-base-content">
+                            {song.name}
+                        </h2>
+                        <p className="text-base-content/70">{song.artist}</p>
+                    </Link>
+                    <div className="flex flex-wrap gap-1 mt-2">
+                        <div className="flex gap-1 flex-wrap ">
+                            {song.genres.slice(0, 3).map((genre) => (
+                                <span key={genre.id} className="badge badge-sm">
+                                    {genre.name}
+                                </span>
+                            ))}
+                            {song.genres.length > 3 && (
+                                <span className="badge badge-ghost badge-sm">
+                                    +{song.genres.length - 3} more
+                                </span>
+                            )}
+                        </div>
                     </div>
                 </div>
-                <div className="card-actions justify-between items-center mt-4">
+                <div className="flex items-center justify-between mt-4">
                     <span className="text-lg font-bold text-primary">
                         ${Number(song.price).toFixed(2)}
                     </span>
-                    <button
-                        className="btn btn-primary btn-sm"
-                        onClick={onAddToCart}
-                    >
-                        Buy
-                    </button>
+                    {!song.owned && (
+                        <form
+                            onSubmit={(e) => {
+                                e.preventDefault();
+                                router.post(route("songs.purchase", song.id));
+                            }}
+                        >
+                            <button
+                                type="submit"
+                                className="btn btn-error btn-sm"
+                            >
+                                Buy
+                            </button>
+                        </form>
+                    )}
                 </div>
             </div>
         </div>

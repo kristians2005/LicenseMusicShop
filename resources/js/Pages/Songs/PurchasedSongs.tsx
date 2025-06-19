@@ -1,17 +1,19 @@
 import ArtistSongCard from "@/Components/Songs/ArtistSongCard";
+import PurchasedSongCard from "@/Components/Songs/PurchasedSongCard";
 import withRoleBasedLayout from "@/HOCs/withRoleBasedLayout";
 import { Link } from "@inertiajs/react";
-import { div } from "framer-motion/client";
 
-function ArtistSongs({ songs }: { songs?: any }) {
-    console.log("songs", songs);
-
+function PurchasedSongs({ songs }: { songs?: any }) {
     return (
         <div className="flex flex-col items-center min-h-screen bg-base-200">
-            <div className="grid my-10 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full px-2 sm:px-4">
-                {songs.data.map((song: any) => (
-                    <ArtistSongCard key={song.id} song={song} />
-                ))}
+            <div className="text-center my-10">
+                <h1 className="text-2xl font-bold text-primary mb-4">
+                    Your Purchased Songs
+                </h1>
+                <p className="text-base-content/70">
+                    Here are the songs you have purchased. You can download them
+                    anytime.
+                </p>
             </div>
             <div className="join">
                 <Link
@@ -30,8 +32,13 @@ function ArtistSongs({ songs }: { songs?: any }) {
                     »
                 </Link>
             </div>
+            <div className="grid my-10 grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6 w-full px-2 sm:px-4">
+                {songs.data.map((song: any) => (
+                    <PurchasedSongCard key={song.id} song={song} />
+                ))}
+            </div>
         </div>
     );
 }
 
-export default withRoleBasedLayout(ArtistSongs);
+export default withRoleBasedLayout(PurchasedSongs);

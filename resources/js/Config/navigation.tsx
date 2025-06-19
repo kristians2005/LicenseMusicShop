@@ -26,6 +26,12 @@ export const menuItems: MenuItem[] = [
         roles: ["artist"],
     },
     {
+        name: "purchased songs",
+        href: "/purchases",
+        icon: <ChartBarIcon className="w-5 h-5 text-accent" />,
+        roles: ["user"],
+    },
+    {
         name: "Login",
         href: route("login"),
         icon: <ArrowRightOnRectangleIcon className="w-5 h-5 text-info" />,
