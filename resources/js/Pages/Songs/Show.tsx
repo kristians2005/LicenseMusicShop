@@ -2,7 +2,7 @@ import { Head } from "@inertiajs/react";
 import { PageProps, Song } from "@/types";
 import WaveForm from "@/Components/Songs/waveSurfer";
 import { useState } from "react";
-import { Link } from "@inertiajs/react";
+import { Link, router } from "@inertiajs/react";
 import {
     PlayIcon,
     ShoppingCartIcon,
@@ -15,7 +15,7 @@ interface Props extends PageProps {
     song?: Song;
 }
 
-function Show({ song }: Props) {
+function Show({ owned, song }: Props) {
     if (!song) return null;
     const [isPlaying, setIsPlaying] = useState(false);
     console.log(song);
@@ -34,10 +34,16 @@ function Show({ song }: Props) {
                                 <div className="card-body">
                                     <div className="flex flex-col md:flex-row gap-6">
                                         {/* Cover Image */}
-                                        <div className="w-full md:w-64 h-64 rounded-lg shadow-lg justify-center items-center bg-base-300 flex">
+                                        <div className="w-full md:w-64 h-64 rounded-lg shadow-lg justify-center items-center bg-base-300 flex relative">
+                                            {/* Owned badge */}
+                                            {owned && (
+                                                <span className="absolute top-3 right-3 z-10 bg-success text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
+                                                    Owned
+                                                </span>
+                                            )}
                                             {song.cover && (
                                                 <img
-                                                    className=" w-full h-full object-cover rounded-lg"
+                                                    className="w-full h-full object-cover rounded-lg"
                                                     src={
                                                         song.cover.startsWith(
                                                             "/"
@@ -45,6 +51,7 @@ function Show({ song }: Props) {
                                                             ? song.cover
                                                             : `/${song.cover}`
                                                     }
+                                                    alt={song.name}
                                                 />
                                             )}
                                         </div>
@@ -105,10 +112,26 @@ function Show({ song }: Props) {
                                     <div className="text-3xl font-bold text-primary mb-6">
                                         ${Number(song.price).toFixed(2)}
                                     </div>
-                                    <button className="btn btn-primary w-full">
-                                        {/* <ShoppingCartIcon className="w-5 h-5 mr-2" /> */}
-                                        Buy
-                                    </button>
+                                    {!owned && (
+                                        <form
+                                            onSubmit={(e) => {
+                                                e.preventDefault();
+                                                router.post(
+                                                    route(
+                                                        "songs.purchase",
+                                                        song.id
+                                                    )
+                                                );
+                                            }}
+                                        >
+                                            <button
+                                                type="submit"
+                                                className="btn btn-error btn-md w-full"
+                                            >
+                                                Buy
+                                            </button>
+                                        </form>
+                                    )}
                                 </div>
                             </div>
 

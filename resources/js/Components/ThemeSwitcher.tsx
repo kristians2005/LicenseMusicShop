@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 const themes = [
     "light",
     "dark",
+    "aqua",
     "cupcake",
     "cyberpunk",
     "synthwave",
@@ -18,6 +19,7 @@ const themes = [
 const themeColors: { [key: string]: string } = {
     light: "#1e40af", // blue-800
     dark: "#1e293b", // slate-800
+    aqua: "#7dd3fc", // sky-400
     cupcake: "#ff8ba7", // pink-400
     cyberpunk: "#f0db4f", // yellow-400
     synthwave: "#ff00ff", // magenta-400
@@ -32,7 +34,6 @@ const themeColors: { [key: string]: string } = {
 export default function ThemeSwitcher() {
     const [currentTheme, setCurrentTheme] = useState<string>("light");
 
-    // Load theme from localStorage on component mount
     useEffect(() => {
         const savedTheme = localStorage.getItem("theme") || "light";
         setCurrentTheme(savedTheme);
@@ -65,27 +66,31 @@ export default function ThemeSwitcher() {
             </label>
             <ul
                 tabIndex={0}
-                className="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-52"
+                className="dropdown-content z-[1] menu p-2 shadow-lg bg-base-100 rounded-box w-52 max-w-xs sm:w-52"
+                style={{ minWidth: "12rem" }}
             >
                 <li className="menu-title">
                     <span>Choose Theme</span>
                 </li>
-                {themes.map((theme) => (
-                    <li key={theme}>
+                <div className="flex flex-wrap gap-1 sm:flex-col">
+                    {themes.map((theme) => (
                         <button
-                            className={`capitalize flex items-center gap-2 ${
-                                currentTheme === theme ? "active" : ""
+                            key={theme}
+                            className={`capitalize flex items-center gap-2 px-2 py-1 rounded ${
+                                currentTheme === theme
+                                    ? "active bg-primary/10"
+                                    : ""
                             }`}
                             onClick={() => handleThemeChange(theme)}
                         >
                             <div
-                                className="w-1 h-6 rounded-full"
+                                className="w-1 h-5 rounded-full"
                                 style={{ backgroundColor: themeColors[theme] }}
                             />
                             {theme}
                         </button>
-                    </li>
-                ))}
+                    ))}
+                </div>
             </ul>
         </div>
     );

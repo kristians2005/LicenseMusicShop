@@ -93,10 +93,11 @@ function Edit({ song, genres }: EditProps) {
                     <label className="label">Duration</label>
                     <input
                         type="text"
-                        className="input input-bordered"
+                        className="input input-bordered bg-base-300"
                         value={data.duration}
                         onChange={(e) => setData("duration", e.target.value)}
                         required
+                        readOnly
                     />
                     {errors.duration && (
                         <span className="text-error text-xs">
@@ -111,7 +112,9 @@ function Edit({ song, genres }: EditProps) {
                         type="number"
                         className="input input-bordered"
                         value={data.price}
-                        onChange={(e) => setData("price", e.target.value)}
+                        onChange={(e) =>
+                            setData("price", Number(e.target.value))
+                        }
                         min={0}
                         step="0.01"
                         required

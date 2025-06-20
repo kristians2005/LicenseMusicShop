@@ -1,7 +1,7 @@
 import { Head } from "@inertiajs/react";
 import { Link } from "@inertiajs/react";
 import { PageProps, Song } from "@/types";
-import { useState } from "react";
+import { useEffect, useState } from "react";
 import withRoleBasedLayout from "@/HOCs/withRoleBasedLayout";
 import SongCard from "@/Components/Songs/SongCard";
 import { motion, AnimatePresence } from "framer-motion";
@@ -11,9 +11,8 @@ interface Genre {
     name: string;
 }
 
-const Index = ({ songs, genres = [], filters }: PageProps) => {
+const Index = ({ authUser, songs, genres = [], filters }: PageProps) => {
     if (!songs) return null;
-    console.log("songs", songs);
 
     const [selectedGenre, setSelectedGenre] = useState<string>(
         filters.genre || "all"
@@ -21,6 +20,11 @@ const Index = ({ songs, genres = [], filters }: PageProps) => {
     const [sortBy, setSortBy] = useState<string>(filters.sort || "name");
     const [searchQuery, setSearchQuery] = useState<string>(
         filters.search || ""
+    );
+    const [fontSize, setFontSize] = useState(
+        typeof window !== "undefined"
+            ? localStorage.getItem("fontSize") || "normal"
+            : "normal"
     );
 
     // Handle filter submit
@@ -32,6 +36,32 @@ const Index = ({ songs, genres = [], filters }: PageProps) => {
             sort: sortBy,
         });
     };
+
+    useEffect(() => {
+        const handler = () => {
+            setFontSize(localStorage.getItem("fontSize") || "normal");
+        };
+        window.addEventListener("storage", handler);
+        return () => window.removeEventListener("storage", handler);
+    }, []);
+
+    // Or, if you want to react to changes in the attribute:
+    useEffect(() => {
+        const observer = new MutationObserver(() => {
+            setFontSize(
+                document.documentElement.getAttribute("data-font-size") ||
+                    "normal"
+            );
+        });
+        observer.observe(document.documentElement, { attributes: true });
+        return () => observer.disconnect();
+    }, []);
+
+    // Determine grid columns
+    const gridCols =
+        fontSize === "large"
+            ? "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4"
+            : "grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4";
 
     return (
         <>
@@ -136,7 +166,9 @@ const Index = ({ songs, genres = [], filters }: PageProps) => {
                         </Link>
                     </div>
                     {/* Songs Grid with animation */}
-                    <div className="grid grid-cols-1 sm:grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 sm:gap-6">
+                    <div
+                        className={`grid gap-6 ${gridCols} sm:justify-items-stretch justify-items-center`}
+                    >
                         <AnimatePresence>
                             {songs.data.map((song) => (
                                 <motion.div
@@ -146,7 +178,7 @@ const Index = ({ songs, genres = [], filters }: PageProps) => {
                                     exit={{ opacity: 0, scale: 0.95, y: 20 }}
                                     transition={{ duration: 0.25 }}
                                 >
-                                    <SongCard song={song} />
+                                    <SongCard auth={authUser} song={song} />
                                 </motion.div>
                             ))}
                         </AnimatePresence>

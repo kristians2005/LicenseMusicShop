@@ -16,7 +16,7 @@ export default function DropDownList({ auth }: PageProps) {
     return (
         <>
             {filteredItems.map((item, index) => (
-                <li key={index}>
+                <li key={index} className=" list-none">
                     <Link
                         key={item.name}
                         href={item.href}

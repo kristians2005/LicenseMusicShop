@@ -1,23 +1,86 @@
 import { Link, router } from "@inertiajs/react";
-import { Song } from "@/types";
-import { useState } from "react";
+import { Song, user } from "@/types";
+import { useEffect, useState } from "react";
 
 interface SongCardProps {
+    auth: {
+        user?: user;
+        role: string;
+    };
     song: Song;
     onPlay?: () => void;
     onAddToCart?: () => void;
 }
 
-export default function SongCard({ song, onPlay, onAddToCart }: SongCardProps) {
+export default function SongCard({
+    auth = { user: undefined, role: "" },
+    song,
+    onPlay,
+    onAddToCart,
+}: SongCardProps) {
+    const [fontSize, setFontSize] = useState(
+        typeof window !== "undefined"
+            ? localStorage.getItem("fontSize") || "normal"
+            : "normal"
+    );
+
+    useEffect(() => {
+        const observer = new MutationObserver(() => {
+            setFontSize(
+                document.documentElement.getAttribute("data-font-size") ||
+                    "normal"
+            );
+        });
+        observer.observe(document.documentElement, { attributes: true });
+        return () => observer.disconnect();
+    }, []);
+
+    const cardHeightClass =
+        fontSize === "large"
+            ? "h-[700px] md:h-[600px]"
+            : "h-[600px] md:h-[500px]";
+
     return (
-        <div className="card bg-base-100 shadow-xl w-full h-[500px] flex flex-col relative">
+        <div
+            className={`card bg-base-100 shadow-xl w-[300px] sm:w-full ${cardHeightClass} flex flex-col relative`}
+        >
             {song.owned && (
                 <span className="absolute top-3 right-3 z-10 bg-success text-white text-xs font-semibold px-3 py-1 rounded-full shadow">
                     Owned
                 </span>
             )}
+            {auth?.role === "admin" && (
+                <div className="absolute top-3 left-3 z-10 flex flex-col gap-2">
+                    <Link
+                        href={route("songs.edit", song.id)}
+                        className="btn btn-xs btn-outline btn-primary"
+                    >
+                        Edit
+                    </Link>
+                    <form
+                        onSubmit={(e) => {
+                            e.preventDefault();
+                            if (
+                                confirm(
+                                    "Are you sure you want to delete this song?"
+                                )
+                            ) {
+                                router.delete(route("songs.destroy", song.id));
+                            }
+                        }}
+                    >
+                        <button
+                            type="submit"
+                            className="btn btn-xs btn-outline btn-error"
+                        >
+                            Delete
+                        </button>
+                    </form>
+                </div>
+            )}
+
             <Link href={route("songs.show", song.id)} className="flex-shrink-0">
-                <figure className="relative aspect-square bg-base-300 flex items-center justify-center rounded-t-xl overflow-hidden">
+                <figure className="relative  aspect-square bg-base-300 flex items-center justify-center rounded-t-xl overflow-hidden">
                     {song.cover && (
                         <img
                             className="w-full h-full object-cover"

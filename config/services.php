@@ -18,6 +18,13 @@ return [
         'token' => env('POSTMARK_TOKEN'),
     ],
 
+    'google' => [
+        'client_id' => env('GOOGLE_CLIENT_ID'),        // Your Google Client ID
+        'client_secret' => env('GOOGLE_CLIENT_SECRET'), // Your Google Client Secret
+        'redirect' => env('GOOGLE_REDIRECT_URL'),      // Your Google Redirect URL
+    ],
+
+
     'ses' => [
         'key' => env('AWS_ACCESS_KEY_ID'),
         'secret' => env('AWS_SECRET_ACCESS_KEY'),

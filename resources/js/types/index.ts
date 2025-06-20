@@ -21,12 +21,17 @@ export interface SongFile {
     updated_at: string;
 }
 
+export interface user {
+    role: 'user' | 'artist' | 'admin';
+}
 export interface Song {
     id: number;
     name: string;
     artist: string;
     duration: string;
     price: number;
+    role: 'user' | 'artist' | 'admin';
+    owned: boolean;
     cover: string | null;
     file: string;
     is_private: boolean;

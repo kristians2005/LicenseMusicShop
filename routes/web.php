@@ -1,5 +1,6 @@
 <?php
 
+use App\Http\Controllers\GoogleAuthController;
 use App\Http\Controllers\ProfileController;
 use App\Http\Controllers\SongController;
 use App\Http\Controllers\WelcomeController;
@@ -18,6 +19,12 @@ Route::get('/about', function () {
 })->name('About');
 
 Route::get('/store', [SongController::class, 'index'])->name('songs.index');
+
+
+// Route to redirect to Google's OAuth page
+Route::get('/auth/google/redirect', [GoogleAuthController::class, 'redirect'])->name('auth.google.redirect');
+// Route to handle the callback from Google
+Route::get('/api/auth/google/callback', [GoogleAuthController::class, 'callback'])->name('auth.google.callback');
 
 
 Route::middleware('auth')->group(function () {

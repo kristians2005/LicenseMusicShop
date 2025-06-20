@@ -21,12 +21,11 @@ const Welcome: React.FC<PageProps> = ({ auth }) => {
                     <div className="hero-content text-center">
                         <div className="max-w-3xl">
                             <h1 className="text-5xl font-bold text-primary mb-8">
-                                Your Music Shop
+                                Welcome to BuyMusic
                             </h1>
                             <p className="text-xl text-base-content/80 mb-8">
-                                Buy music for your needs, support artists, and
-                                discover new melodies. BuyMusic is your music
-                                destination.
+                                Make your dream game come true with best music
+                                on the market.
                             </p>
                             <div className="flex gap-4 justify-center">
                                 {auth.user ? (

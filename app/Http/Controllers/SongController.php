@@ -64,8 +64,10 @@ class SongController extends Controller
 
         // Get all genres for the filter dropdown
         $genres = Genre::all();
+        $authUser = auth()->user();
 
         return Inertia::render('Songs/Index', [
+            'authUser' => $authUser,
             'songs' => $songs,
             'genres' => $genres,
             'filters' => [
@@ -182,14 +184,19 @@ class SongController extends Controller
 
     public function show(Song $song)
     {
-        if ($song->is_private && !auth()->user()) {
-            abort(403);
+        $user = auth()->user();
+        $owned = false;
+
+        if ($user) {
+            $owned = $user->purchasedSongs()->where('song_id', $song->id)->exists();
         }
 
+        // Load genres or other relations if needed
         $song->load('genres');
 
         return Inertia::render('Songs/Show', [
-            'song' => $song
+            'song' => $song,
+            'owned' => $owned,
         ]);
     }
 
